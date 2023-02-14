@@ -52,10 +52,26 @@ public:
     }
 
 
-    ull solve_by_dfs(const int &index, const int &sum, bool lead, bool limit) {
+    ull solve_by_dfs(const int &index, const int &sum, bool lead, bool limit, const int &now) {
         ull ans = 0;
         if (!index) { return sum; }
-
+        if (!lead && !limit && new_dp[index][sum] != -1) {
+            return new_dp[index][sum];
+        }
+        int up = (limit ? nums[index] : 9);   //这一位的最大值(标明是否有数位限制)
+        for (int i = 0; i <= up; ++i) {
+            if (i == 0 && lead) {       //当前位是0并且有前导0
+                ans += solve_by_dfs(index - 1, sum, true, i == up && limit, now);
+            } else if (i == now) {
+                ans += solve_by_dfs(index - 1, sum + 1, false, limit && i == up, now);
+            } else if (i != now) {
+                ans += solve_by_dfs(index - 1, sum, false, limit && i == up, now);
+            }
+        }
+        if (!lead && !limit) {
+            new_dp[index][sum] += ans;
+        }
+        return ans;
     }
 
 
@@ -72,7 +88,11 @@ public:
 
 private:
     vector<ull> dp;
+    vector<vector<int>> new_dp;
     vector<ull> ten_power;
+
+    vector<ull> nums;
+
     ull left;
     ull right;
 };
