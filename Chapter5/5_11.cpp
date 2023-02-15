@@ -23,8 +23,24 @@ public:
         }
     }
 
+    int solve_by_recursion(const int &index, const int &index2) {
+        if (dp[index][index2]) { return dp[index][index2]; }
+
+        int res = MAX;
+        if (index == index2) { return 0; }
+
+        for (auto k = index; k < index2; ++k) {
+            res = min(res,
+                      solve_by_recursion(index, k) + solve_by_recursion(k + 1, index2) + stone_nums[index][index2]);
+        }
+        return dp[index][index2] = res;
+    }
+
+
     void solve() {
-        for (int i = 0; i < stone_nums.size() - 1; ++i) {
+
+        for (int i = stone_nums.size() - 1; i >= 0; --i) {
+
             for (int j = i + 1; j < stone_nums.size(); ++j) {
                 int res = MAX;
                 for (int k = i; k < j; ++k) {
@@ -32,12 +48,15 @@ public:
                 }
                 dp[i][j] = res;
             }
+
+
         }
     }
 
     int get_result() {
+//        solve_by_recursion(0, stone_nums.size() - 1);
         solve();
-        return dp[dp.size() - 1][dp[0].size() - 1];
+        return dp[0][dp[0].size() - 1];
     }
 
 
